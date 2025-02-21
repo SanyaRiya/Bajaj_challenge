@@ -1,45 +1,45 @@
 const express = require("express");
 const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
-app.use(express.json());
 app.use(cors());
+app.use(express.json()); // To parse JSON requests
 
-const USER_ID = "Sanya_Singh_17012004";  
-const EMAIL = "22BCS14374@cuchd.in";
-const ROLL_NUMBER = "22BCS14374"; 
+// Default route for root "/"
+app.get("/", (req, res) => {
+  res.send("Bajaj Challenge API is running!");
+});
 
-// POST /bfhl - Processes input data
+// Your existing routes
 app.post("/bfhl", (req, res) => {
-    try {
-        const { data } = req.body;
-        if (!data || !Array.isArray(data)) {
-            return res.status(400).json({ is_success: false, message: "Invalid input" });
-        }
+  const { data } = req.body;
 
-        // Separate numbers and alphabets
-        const numbers = data.filter(item => !isNaN(item));
-        const alphabets = data.filter(item => /^[a-zA-Z]$/.test(item));
-        const highest_alphabet = alphabets.length ? [alphabets.sort().pop()] : [];
+  if (!data || !Array.isArray(data)) {
+    return res.status(400).json({ is_success: false, error: "Invalid input" });
+  }
 
-        res.json({
-            is_success: true,
-            user_id: USER_ID,
-            email: EMAIL,
-            roll_number: ROLL_NUMBER,
-            numbers,
-            alphabets,
-            highest_alphabet
-        });
-    } catch (error) {
-        res.status(500).json({ is_success: false, message: "Server error" });
-    }
+  const numbers = data.filter((item) => !isNaN(item));
+  const alphabets = data.filter((item) => isNaN(item));
+  const highestAlphabet = alphabets.length ? [alphabets.sort().reverse()[0]] : [];
+
+  res.json({
+    is_success: true,
+    user_id: "Sanya_Singh_17012004",
+    email: "22BCS14374@cuchd.in",
+    roll_number: "22BCS14374",
+    numbers,
+    alphabets,
+    highest_alphabet: highestAlphabet,
+  });
 });
 
-// GET /bfhl - Returns hardcoded response
 app.get("/bfhl", (req, res) => {
-    res.json({ operation_code: 1 });
+  res.json({ operation: "API is working!" });
 });
 
+// Start the server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
